@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Rulebook QA System</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #eef2f7, #f8fafc);
+            color: #1f2937;
+        }
+
+        .container {
+            width: 92%;
+            max-width: 950px;
+            margin: 45px auto;
+        }
+
+        /* HEADER */
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #111827;
+            color: white;
+            border-radius: 18px;
+            font-size: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            color: #111827;
+        }
+
+        .header p {
+            margin-top: 10px;
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        /* CARDS */
+
+        .card {
+            background: rgba(255, 255, 255, 0.96);
+            padding: 28px;
+            border-radius: 18px;
+            box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+            margin-bottom: 20px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #111827;
+        }
+
+        /* SEARCH */
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            flex: 1;
+            padding: 15px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        input:focus {
+            border-color: #111827;
+            box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+        }
+
+        .ask-button {
+            padding: 15px 24px;
+            border: none;
+            border-radius: 10px;
+            background: #111827;
+            color: white;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        .ask-button:hover {
+            background: #374151;
+            transform: translateY(-1px);
+        }
+
+        /* DEMO BUTTONS */
+
+        .demo-title {
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #6b7280;
+            font-weight: bold;
+        }
+
+        .demo-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .demo-buttons button {
+            padding: 10px 15px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            background: #f9fafb;
+            color: #374151;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .demo-buttons button:hover {
+            background: #111827;
+            color: white;
+            border-color: #111827;
+        }
+
+        /* STATUS */
+
+        .status {
+            margin-top: 15px;
+            min-height: 20px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .spinner {
+            width: 15px;
+            height: 15px;
+            border: 2px solid #d1d5db;
+            border-top: 2px solid #111827;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* RESULT */
+
+        .result {
+            display: none;
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .result-header h2 {
+            margin: 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .badge-answered {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-conflict {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-not_covered {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge-unknown {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        /* ANSWER */
+
+        .answer-box {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 25px;
+        }
+
+        .answer {
+            font-size: 17px;
+            line-height: 1.75;
+            color: #374151;
+            white-space: normal;
+        }
+
+        .answer strong {
+            color: #111827;
+        }
+
+        /* CITATIONS */
+
+        .evidence-heading {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .evidence-heading h3 {
+            margin: 0;
+        }
+
+        .citation {
+            background: white;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-left: 4px solid #111827;
+            margin-top: 10px;
+            border-radius: 8px;
+        }
+
+        .citation-title {
+            font-weight: bold;
+            color: #111827;
+            line-height: 1.4;
+        }
+
+        .similarity {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 7px;
+        }
+
+        .no-citation {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        /* FOOTER */
+
+        .footer {
+            text-align: center;
+            color: #9ca3af;
+            font-size: 13px;
+            margin-top: 30px;
+            padding-bottom: 20px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 600px) {
+
+            .container {
+                width: 94%;
+                margin: 25px auto;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 26px;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .ask-button {
+                width: 100%;
+            }
+
+            .result-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <div class="logo">
+            📚
+        </div>
+
+        <h1>Rulebook QA System</h1>
+
+        <p>
+            Ask questions about the university rulebook
+            and get evidence-backed answers.
+        </p>
+
+    </div>
+
+
+    <!-- QUESTION CARD -->
+
+    <div class="card">
+
+        <h2>Ask a Question</h2>
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="question"
+                placeholder="e.g. What is the attendance requirement?"
+            >
+
+            <button
+                class="ask-button"
+                id="askButton"
+                onclick="askQuestion()"
+            >
+                Ask
+            </button>
+
+        </div>
+
+
+        <div class="demo-title">
+            Try a demo question
+        </div>
+
+
+        <div class="demo-buttons">
+
+            <button onclick="setQuestion('What library services are available to students?')">
+                📚 Library
+            </button>
+
+            <button onclick="setQuestion('What attendance percentage is required to be eligible for exams?')">
+                📊 Attendance
+            </button>
+
+            <button onclick="setQuestion('What is the procedure for studying abroad?')">
+                ❓ Not Covered
+            </button>
+
+            <button onclick="setQuestion('What are the branch change rules?')">
+                ⚠️ Conflict
+            </button>
+
+        </div>
+
+
+        <div class="status" id="status"></div>
+
+    </div>
+
+
+    <!-- RESULT CARD -->
+
+    <div class="card result" id="result">
+
+        <div class="result-header">
+
+            <h2>Result</h2>
+
+            <div
+                class="badge badge-unknown"
+                id="resultType"
+            >
+                UNKNOWN
+            </div>
+
+        </div>
+
+
+        <div class="answer-box">
+
+            <div class="answer" id="answer"></div>
+
+        </div>
+
+
+        <div class="evidence-heading">
+
+            <span>🔎</span>
+
+            <h3>Evidence / Citations</h3>
+
+        </div>
+
+
+        <div id="citations"></div>
+
+    </div>
+
+
+    <!-- FOOTER -->
+
+    <div class="footer">
+
+        Rulebook QA System
+        • FastAPI
+        • Sentence Transformers
+        • Groq
+
+    </div>
+
+</div>
+
+
+<script>
+
+const API_URL = "https://rulebook-qa-system.onrender.com";
+
+
+function setQuestion(question) {
+
+    document.getElementById("question").value = question;
+
+    document.getElementById("question").focus();
+
+}
+
+
+async function askQuestion() {
+
+    const questionInput =
+        document.getElementById("question");
+
+    const question =
+        questionInput.value.trim();
+
+    const status =
+        document.getElementById("status");
+
+    const result =
+        document.getElementById("result");
+
+    const answer =
+        document.getElementById("answer");
+
+    const resultType =
+        document.getElementById("resultType");
+
+    const citations =
+        document.getElementById("citations");
+
+    const askButton =
+        document.getElementById("askButton");
+
+
+    if (!question) {
+
+        status.textContent =
+            "Please enter a question.";
+
+        return;
+
+    }
+
+
+    /* Loading state */
+
+    status.innerHTML = `
+        <span class="loading">
+            <span class="spinner"></span>
+            Searching the rulebook...
+        </span>
+    `;
+
+    result.style.display = "none";
+
+    citations.innerHTML = "";
+
+    askButton.disabled = true;
+
+    askButton.textContent = "Searching...";
+
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/ask`,
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+
+                body: JSON.stringify({
+                    question: question
+                })
+            }
+        );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                "Server returned an error."
+            );
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        status.textContent = "";
+
+
+        /* Result type */
+
+        const type =
+            data.type || "unknown";
+
+        resultType.textContent =
+            type.replace("_", " ");
+
+        resultType.className =
+            "badge badge-" + type;
+
+
+        /* Answer */
+
+        answer.innerHTML =
+            (data.answer ||
+                "No answer returned.")
+                .replace(
+                    /\*\*(.*?)\*\*/g,
+                    "<strong>$1</strong>"
+                );
+
+
+        /* Citations */
+
+        if (
+            data.citations &&
+            data.citations.length > 0
+        ) {
+
+            data.citations.forEach(
+                (citation) => {
+
+                    const citationBox =
+                        document.createElement("div");
+
+                    citationBox.className =
+                        "citation";
+
+
+                    const title =
+                        document.createElement("div");
+
+                    title.className =
+                        "citation-title";
+
+                    title.textContent =
+                        citation.section ||
+                        "Rulebook Section";
+
+
+                    const similarity =
+                        document.createElement("div");
+
+                    similarity.className =
+                        "similarity";
+
+
+                    if (
+                        citation.similarity !==
+                        undefined
+                    ) {
+
+                        similarity.textContent =
+                            "Semantic similarity: " +
+                            Number(
+                                citation.similarity
+                            ).toFixed(3);
+
+                    }
+
+
+                    citationBox.appendChild(title);
+
+                    citationBox.appendChild(
+                        similarity
+                    );
+
+                    citations.appendChild(
+                        citationBox
+                    );
+
+                }
+            );
+
+        } else {
+
+            citations.innerHTML =
+                '<p class="no-citation">' +
+                'No supporting citation was returned.' +
+                '</p>';
+
+        }
+
+
+        result.style.display = "block";
+
+
+        /* Scroll to result */
+
+        result.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }
+
+
+    catch (error) {
+
+        status.textContent =
+            "Could not connect to the backend. " +
+            "Make sure main.py is running.";
+
+        console.error(error);
+
+    }
+
+
+    finally {
+
+        askButton.disabled = false;
+
+        askButton.textContent = "Ask";
+
+    }
+
+}
+
+
+/* Press Enter to ask the question */
+
+document
+    .getElementById("question")
+    .addEventListener(
+        "keypress",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                askQuestion();
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>
